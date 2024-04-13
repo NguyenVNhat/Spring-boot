@@ -1,9 +1,12 @@
 package com.apispring.api.models;
 
+import lombok.Data;
+
 import javax.persistence.*;
 
 @Entity
 @Table(name = "roles")
+@Data
 public class Roles {
     @Id
     @Column(name = "id")
@@ -16,27 +19,11 @@ public class Roles {
     @Column(name = "account_id")
     private Integer accountId;
 
-    public Integer getId() {
-        return this.id;
+    public Roles() {
     }
 
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
-    public String getRoles() {
-        return this.roles;
-    }
-
-    public void setRoles(String roles) {
+    public Roles(String roles, Integer accountId) {
         this.roles = roles;
-    }
-
-    public Integer getAccountId() {
-        return this.accountId;
-    }
-
-    public void setAccountId(Integer accountId) {
         this.accountId = accountId;
     }
 }

@@ -1,8 +1,11 @@
 package com.apispring.api.service;
 
+import com.apispring.api.dto.BookDto;
 import com.apispring.api.dto.ResponeObject;
 import com.apispring.api.models.Book;
+import com.apispring.api.models.Category;
 import com.apispring.api.repository.BookRepository;
+import com.apispring.api.repository.CategoryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -10,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Base64Utils;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -18,35 +22,142 @@ public class BookService {
     BookRepository bookRepository;
     @Autowired
     FileService fileService;
-    public ResponseEntity<ResponeObject> getAll()
+    @Autowired
+    CategoryRepository categoryRepository;
+    public ResponseEntity<ResponeObject> getall()
     {
         List<Book> books = bookRepository.findAll();
+        ArrayList<BookDto> bookDtos = new ArrayList<>();
+        for ( Book book: books
+             ) {
+            Category category  = categoryRepository.findByid(book.getCategoryId());
+            bookDtos.add(new BookDto(category,book));
+        }
         return books.isEmpty()?
             ResponseEntity.status(HttpStatus.NOT_FOUND).body(
                     new ResponeObject("False","Can't get all book",""))
         :   ResponseEntity.status(HttpStatus.OK).body(
-                    new ResponeObject("True","Success to get all book",books));
+                    new ResponeObject("True","Success to get all book",bookDtos));
     }
     public ResponseEntity<ResponeObject> get(Integer id)
     {
         Book books = bookRepository.findByid(id);
-        System.out.println(books.getId());
         if( books == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
                     new ResponeObject("False", "Can't get book with id = " + id, ""));
         }
         else {
             return ResponseEntity.status(HttpStatus.OK).body(
-                new ResponeObject("True", "Success to get book", books));
+                new ResponeObject("True", "Success to get book with id = "+id, books));
+        }
+    }
+    public ResponseEntity<ResponeObject> getbyname(String name)
+    {
+        Book books = bookRepository.findBynamebook(name);
+        if( books == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
+                    new ResponeObject("False", "Can't get book with name = " + name, ""));
+        }
+        else {
+            return ResponseEntity.status(HttpStatus.OK).body(
+                    new ResponeObject("True", "Success to get book with name = "+name, books));
+        }
+    }
+    public ResponseEntity<ResponeObject> getbyprice(Integer price){
+        List<Book> books = bookRepository.findByprice(price);
+        if( books.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
+                    new ResponeObject("False", "Can't get book with price = " + price, ""));
+        }
+        else {
+            return ResponseEntity.status(HttpStatus.OK).body(
+                    new ResponeObject("True", "Success to get book with price = "+price, books));
+        }
+    }
+    public ResponseEntity<ResponeObject> getaroundprice(Integer low,Integer high)
+    {
+        List<Book> books = bookRepository.findAll();
+        if(books.isEmpty()){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
+                    new ResponeObject("False", "Can't get book" , ""));
+        }
+        else{
+            ArrayList<Book> bookArrayList = new ArrayList<>();
+            for (Book book:books
+                 ) {
+                if( book.getPrice() > low && book.getPrice() < high)
+                {
+                    bookArrayList.add(book);
+                }
+            }
+            if(bookArrayList.isEmpty())
+            {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
+                        new ResponeObject("False", "Can't get book" , ""));
+            }
+            else{
+                return ResponseEntity.status(HttpStatus.OK).body(
+                        new ResponeObject("True", "Success to get book with price > "+low+" and < "+high, bookArrayList));
+            }
+        }
+    }
+    public  ResponseEntity<ResponeObject> getlowerprice(Integer price){
+        List<Book> books = bookRepository.findAll();
+        if(books.isEmpty()){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
+                    new ResponeObject("False", "Can't get book" , ""));
+        }
+        else{
+            ArrayList<Book> bookArrayList = new ArrayList<>();
+            for (Book book:books
+            ) {
+                if( book.getPrice() < price)
+                {
+                    bookArrayList.add(book);
+                }
+            }
+            if(bookArrayList.isEmpty())
+            {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
+                        new ResponeObject("False", "Can't get book" , ""));
+            }
+            else{
+                return ResponseEntity.status(HttpStatus.OK).body(
+                        new ResponeObject("True", "Success to get book with price < "+price, bookArrayList));
+            }
+        }
+    }
+    public  ResponseEntity<ResponeObject> gethigherprice(Integer price){
+        List<Book> books = bookRepository.findAll();
+        if(books.isEmpty()){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
+                    new ResponeObject("False", "Can't get book" , ""));
+        }
+        else{
+            ArrayList<Book> bookArrayList = new ArrayList<>();
+            for (Book book:books
+            ) {
+                if( book.getPrice() > price)
+                {
+                    bookArrayList.add(book);
+                }
+            }
+            if(bookArrayList.isEmpty())
+            {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
+                        new ResponeObject("False", "Can't get book" , ""));
+            }
+            else{
+                return ResponseEntity.status(HttpStatus.OK).body(
+                        new ResponeObject("True", "Success to get book with price < "+price, bookArrayList));
+            }
         }
     }
     public ResponseEntity<ResponeObject> insert(Book newbook)
     {
-        System.out.println(newbook.getId());
         Book books = bookRepository.findByid(newbook.getId());
         if(books == null){
             newbook.setImage(fileService.convertToBase64(newbook.getImage()));
-            System.out.println(newbook.getImage());
             bookRepository.save(newbook);
             return  ResponseEntity.status(HttpStatus.OK).body(
                     new ResponeObject("True","Success to insert new book",newbook));

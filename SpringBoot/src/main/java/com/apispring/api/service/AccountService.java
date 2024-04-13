@@ -2,10 +2,13 @@ package com.apispring.api.service;
 
 import com.apispring.api.dto.ResponeObject;
 import com.apispring.api.models.Account;
+import com.apispring.api.models.User;
 import com.apispring.api.repository.AccountRepository;
+import com.apispring.api.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -15,7 +18,10 @@ import java.util.Optional;
 public class AccountService {
     @Autowired
     AccountRepository accountRepository;
-    public ResponseEntity<ResponeObject> getAllAccount()
+    @Autowired
+    UserRepository userRepository;
+    PasswordEncoder passwordEncoder;
+    public ResponseEntity<ResponeObject> getall()
     {
         List<Account> listAccount = (List<Account>) accountRepository.findAll();
         return listAccount.isEmpty()?
@@ -28,7 +34,7 @@ public class AccountService {
     }
     public Boolean IsValid(String username,String password)
     {
-        Account account = accountRepository.findByUsername(username);
+        Account account = accountRepository.findByusername(username);
         if (account!= null && account.getPassword().equals(password))
         {
             return true;
@@ -37,7 +43,7 @@ public class AccountService {
             return false;
         }
     }
-    public ResponseEntity<ResponeObject> getAccount(Integer Id)
+    public ResponseEntity<ResponeObject> get(Integer Id)
     {
         Optional<Account> accountFound = Optional.ofNullable(accountRepository.findByid(Id));
         return accountFound.isPresent()?
@@ -48,30 +54,47 @@ public class AccountService {
                         new ResponeObject("Not Found","Can't find account with id = "+Id,"")
                 );
     }
-    public ResponseEntity<ResponeObject> getAccountByUsername(String username)
+    public ResponseEntity<ResponeObject> getByUsername(String username)
     {
-        Optional<Account> accountFound = Optional.ofNullable(accountRepository.findByUsername(username));
+        Optional<Account> accountFound = Optional.ofNullable(accountRepository.findByusername(username));
         return accountFound.isPresent()?
                 ResponseEntity.status(HttpStatus.OK).body(
-                        new ResponeObject("OK","Querry account successfully",accountFound)
+                        new ResponeObject("TRUE","Querry account successfully",accountFound)
                 ):
                 ResponseEntity.status(HttpStatus.NOT_FOUND).body(
-                        new ResponeObject("Not Found","Can't find account with username = "+username,"")
+                        new ResponeObject("FALSE","Can't find account with username = "+username,"")
                 );
     }
-    public ResponseEntity<ResponeObject> createAccount(Account account)
+    public ResponseEntity<ResponeObject> getByRole(String role)
     {
-        Account accountFound = accountRepository.findByid(account.getId());
-        if (accountFound == null)
-               return ResponseEntity.status(HttpStatus.OK).body(
-                new ResponeObject("OK","Insert successfully",accountRepository.save(account))
+        List<Account> account = accountRepository.findByrole(role);
+        if (account == null){
+            return   ResponseEntity.status(HttpStatus.NOT_FOUND).body(
+                    new ResponeObject("FALSE","Can't find account with role = "+role,"")
             );
-        else
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
-                new ResponeObject("Found","This data found in system",accountFound)
-        );
+        }
+        else{
+            return   ResponseEntity.status(HttpStatus.OK).body(
+                    new ResponeObject("TRUE","Success find account with role = "+role,account)
+            );
+        }
     }
-    public  ResponseEntity<ResponeObject> updateAccount(Account newaccount)
+    public ResponseEntity<ResponeObject> getByActive(Boolean active)
+    {
+        List<Account> account = accountRepository.findByactive(active);
+        if (account == null){
+            return   ResponseEntity.status(HttpStatus.NOT_FOUND).body(
+                    new ResponeObject("FALSE","Can't find account with active = "+active,"")
+            );
+        }
+        else{
+            return   ResponseEntity.status(HttpStatus.OK).body(
+                    new ResponeObject("TRUE","Success find account with active = "+active,account)
+            );
+        }
+    }
+
+    public  ResponseEntity<ResponeObject> update(Account newaccount)
     {
        Account account = accountRepository.findByid(newaccount.getId());
        if(account != null)

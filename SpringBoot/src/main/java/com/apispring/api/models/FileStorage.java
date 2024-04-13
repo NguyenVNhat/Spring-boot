@@ -22,8 +22,7 @@ public class FileStorage {
     public FileStorage() {
     }
 
-    public FileStorage(Integer id, String filename, String filetype,  String filebase64) {
-        this.id = id;
+    public FileStorage(String filename, String filetype, String filebase64) {
         this.filename = filename;
         this.filetype = filetype;
         this.filebase64 = filebase64;

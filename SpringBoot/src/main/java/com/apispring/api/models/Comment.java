@@ -1,9 +1,12 @@
 package com.apispring.api.models;
 
+import lombok.Data;
+
 import javax.persistence.*;
 
 @Entity
 @Table(name = "comment")
+@Data
 public class Comment {
     @Id
     @Column(name = "id")
@@ -16,27 +19,17 @@ public class Comment {
     @Column(name = "book_id")
     private Integer bookId;
 
-    public Integer getId() {
-        return this.id;
+    @Column(name = "user_id")
+    private Integer userid;
+    @Column(name = "status")
+    private Boolean status;
+    public Comment() {
     }
 
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
-    public String getComment() {
-        return this.comment;
-    }
-
-    public void setComment(String comment) {
+    public Comment(String comment, Integer bookId, Integer userid, Boolean status) {
         this.comment = comment;
-    }
-
-    public Integer getBookId() {
-        return this.bookId;
-    }
-
-    public void setBookId(Integer bookId) {
         this.bookId = bookId;
+        this.userid = userid;
+        this.status = status;
     }
 }

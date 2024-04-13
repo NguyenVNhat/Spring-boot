@@ -3,7 +3,9 @@ package com.apispring.api.controllers;
 import com.apispring.api.dto.AuthResponseDTO;
 import com.apispring.api.dto.LoginDto;
 import com.apispring.api.models.Account;
+import com.apispring.api.models.User;
 import com.apispring.api.repository.AccountRepository;
+import com.apispring.api.repository.UserRepository;
 import com.apispring.api.security.JWTGenerator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -23,14 +25,14 @@ import org.springframework.web.bind.annotation.RestController;
 public class AuthController {
 
     private AuthenticationManager authenticationManager;
-    private AccountRepository userRepository;
+    private AccountRepository accountRepository;
+    private UserRepository userRepository;
     private PasswordEncoder passwordEncoder;
     private JWTGenerator jwtGenerator;
 
-    @Autowired
-    public AuthController(AuthenticationManager authenticationManager, AccountRepository userRepository,
-                          PasswordEncoder passwordEncoder, JWTGenerator jwtGenerator) {
+    public AuthController(AuthenticationManager authenticationManager, AccountRepository accountRepository, UserRepository userRepository, PasswordEncoder passwordEncoder, JWTGenerator jwtGenerator) {
         this.authenticationManager = authenticationManager;
+        this.accountRepository = accountRepository;
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.jwtGenerator = jwtGenerator;
@@ -47,17 +49,14 @@ public class AuthController {
         return new ResponseEntity<>(new AuthResponseDTO(token), HttpStatus.OK);
     }
     @PostMapping("/register")
-    public ResponseEntity<String> register(@RequestBody Account account) {
-        if (userRepository.existsByUsername(account.getUsername())) {
+    public ResponseEntity<String> register(@RequestBody Account newaccount) {
+        if (accountRepository.existsByUsername(newaccount.getUsername())) {
             return new ResponseEntity<>("Username is taken!", HttpStatus.BAD_REQUEST);
         }
-
-        Account user = new Account();
-        user.setId(account.getId());
-        user.setUsername(account.getUsername());
-        user.setPassword(passwordEncoder.encode((account.getPassword())));
-        user.setRole(account.getRole());
-        user.setActive(account.getActive());
+        newaccount.setPassword(passwordEncoder.encode((newaccount.getPassword())));
+        accountRepository.save(newaccount);
+        Account after = accountRepository.findByid(newaccount.getId());
+        User user = new User("", "", after.getUsername(), "", after.getId());
         userRepository.save(user);
 
         return new ResponseEntity<>("User registered success!", HttpStatus.OK);

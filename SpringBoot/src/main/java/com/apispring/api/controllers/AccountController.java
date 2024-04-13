@@ -13,25 +13,35 @@ import org.springframework.web.bind.annotation.*;
 public class AccountController {
     @Autowired
     AccountService accountService;
-    @GetMapping("/getAll")
-    public ResponseEntity<ResponeObject> getAllAccount()
+    @GetMapping("/getall")
+    public ResponseEntity<ResponeObject> getall()
     {
-        return accountService.getAllAccount();
+        return accountService.getall();
     }
     @GetMapping("/get/{id}")
-    public ResponseEntity<ResponeObject> getAccount(@PathVariable("id") Integer Id)
+    public ResponseEntity<ResponeObject> get(@PathVariable Integer id)
     {
-       return  accountService.getAccount(Id);
+        return accountService.get(id);
     }
-
-    @PostMapping("/add")
-    public ResponseEntity<ResponeObject> registerAccount (@RequestBody Account account)
+    @GetMapping("/getbyusername/{username}")
+    public ResponseEntity<ResponeObject> getbyusername(@PathVariable String username)
     {
-       return  accountService.createAccount(account);
+        return accountService.getByUsername(username);
+    }
+    @GetMapping("/getbyrole/{role}")
+    public ResponseEntity<ResponeObject> getbyrole(@PathVariable String role)
+    {
+        return accountService.getByRole(role);
+    }
+    @GetMapping("/getbyactive/{active}")
+    public ResponseEntity<ResponeObject> getbyrole(@PathVariable Boolean active)
+    {
+        return accountService.getByActive(active);
     }
     @PutMapping("/update")
     public ResponseEntity<ResponeObject> updateAccount (@RequestBody Account account)
     {
-        return  accountService.updateAccount(account);
+        return  accountService.update(account);
     }
+
 }

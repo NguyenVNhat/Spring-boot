@@ -6,27 +6,43 @@ import com.apispring.api.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
 @Controller
 @RequestMapping("/api/user")
 public class UserController {
     @Autowired
     UserService userService;
-    @GetMapping("/getalluser")
-    public ResponseEntity<ResponeObject> getalluser()
+    @GetMapping("/getall")
+    public ResponseEntity<ResponeObject> getall()
     {
-        return userService.getalluser();
+        return userService.getall();
     }
-    @PostMapping("/insertuser")
-    public ResponseEntity<ResponeObject> insertuser(@RequestBody User user)
+    @GetMapping("/get/{id}")
+    public ResponseEntity<ResponeObject> get(@PathVariable Integer id)
     {
-        return  userService.insertuser(user);
+        return userService.get(id);
     }
-
+    @GetMapping("/getbyname/{name}")
+    public ResponseEntity<ResponeObject> getbyname(@PathVariable String name)
+    {
+        return userService.getbyname(name);
+    }
+    @GetMapping("/getbyaddress/{address}")
+    public ResponseEntity<ResponeObject> getbyaddress(@PathVariable String address)
+    {
+        return userService.getbyaddress(address);
+    }
+    @GetMapping("/getbyphone/{phone}")
+    public ResponseEntity<ResponeObject> getbyphone(@PathVariable String phone)
+    {
+        return userService.getbyphone(phone);
+    }
+    @PutMapping("/update")
+    public ResponseEntity<ResponeObject> update(@RequestBody User user)
+    {
+        return  userService.update(user);
+    }
 
 }
 

@@ -1,9 +1,12 @@
 package com.apispring.api.models;
 
+import lombok.Data;
+
 import javax.persistence.*;
 
 @Entity
 @Table(name = "category")
+@Data
 public class Category {
     @Id
     @Column(name = "id")
@@ -11,32 +14,17 @@ public class Category {
     private Integer id;
 
     @Column(name = "active")
-    private String active;
+    private Boolean active;
 
     @Column(name = "category")
     private String category;
 
-    public Integer getId() {
-        return this.id;
+    public Category() {
     }
 
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
-    public String getActive() {
-        return this.active;
-    }
-
-    public void setActive(String active) {
+    public Category(Boolean active, String category) {
         this.active = active;
-    }
-
-    public String getCategory() {
-        return this.category;
-    }
-
-    public void setCategory(String category) {
         this.category = category;
     }
+
 }

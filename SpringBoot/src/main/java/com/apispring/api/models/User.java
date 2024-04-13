@@ -1,9 +1,12 @@
 package com.apispring.api.models;
 
+import lombok.Data;
+
 import javax.persistence.*;
 
 @Entity
 @Table(name = "user")
+@Data
 public class User {
     @Id
     @Column(name = "id")
@@ -25,51 +28,16 @@ public class User {
     @Column(name = "account_id")
     private Integer accountId;
 
-    public Integer getId() {
-        return this.id;
+    public User() {
     }
 
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
-    public String getAddress() {
-        return this.address;
-    }
-
-    public void setAddress(String address) {
+    public User(String address, String avata, String name, String phone, Integer accountId) {
         this.address = address;
-    }
-
-    public String getAvata() {
-        return this.avata;
-    }
-
-    public void setAvata(String avata) {
         this.avata = avata;
-    }
-
-    public String getName() {
-        return this.name;
-    }
-
-    public void setName(String name) {
         this.name = name;
-    }
-
-    public String getPhone() {
-        return this.phone;
-    }
-
-    public void setPhone(String phone) {
         this.phone = phone;
-    }
-
-    public Integer getAccountId() {
-        return this.accountId;
-    }
-
-    public void setAccountId(Integer accountId) {
         this.accountId = accountId;
     }
+
+
 }
